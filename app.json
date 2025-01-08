@@ -1,0 +1,38 @@
+{
+  "expo": {
+    "name": "done",
+    "slug": "done",
+    "version": "1.0.0",
+    "orientation": "default",
+    "icon": "./app/assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./app/assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "We need your location to provide accurate weather updates.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "We need your location to provide weather updates even when the app is in the background."
+      },
+      "bundleIdentifier": "com.bennetsasu.done"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./app/assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      }
+    },
+    "web": {
+      "favicon": "./app/assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "9b6004ce-46b3-4279-bd39-dbb56b3e1ddb"
+      }
+    }
+  }
+}
