@@ -1,34 +1,46 @@
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
-// Uncomment these lines if the screens are ready
-// import WelcomeScreen from "./app/screens/WelcomeScreen";
-// import ViewImageScreen from "./app/screens/ViewImageScreen";
-import IndexScreen from "./app/screens/IndexScreen";
-
+// Correct imports for screens
+import HomeScreen from "./app/screens/HomePage";  // Make sure the Home screen is properly imported
+import IndexScreen from "./app/screens/IndexScreen";  // Make sure IndexScreen is correctly imported
+import WelcomeScreen from "./app/screens/WelcomeScreen";  // Make sure IndexScreen is correctly imported
+import SplashScreen from "./app/screens/SplashScreen";
+import ViewImageScreen from "./app/screens/CreateAccount";
 const Stack = createStackNavigator();
 
 const App = () => {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="IndexScreen">
-        {/* Uncomment and adjust these screens as needed */}
-        {/*
-        <Stack.Screen
-          name="Welcome"
-          component={WelcomeScreen}
-          options={{ headerShown: false }}
+      <Stack.Navigator initialRouteName="SplashScreen">
+      <Stack.Screen
+          name="SplashScreen"
+          component={SplashScreen} // Fixed: Added Home component
+          options={{ headerShown: false }} // Optional: hide header
         />
+        
         <Stack.Screen
-          name="ViewImage"
-          component={ViewImageScreen}
-          options={{ headerShown: false }}
+          name="HomeScreen"
+          component={HomeScreen} // Fixed: Added Home component
+          options={{ headerShown: false }} // Optional: hide header
         />
-        */}
+        
         <Stack.Screen
           name="IndexScreen"
-          component={IndexScreen}
-          options={{ headerShown: false }}
+          component={IndexScreen} // IndexScreen component must be imported above
+          options={{ headerShown: false }} // Optional: hide header
+        />
+
+        <Stack.Screen
+          name="WelcomeScreen"
+          component={WelcomeScreen} // IndexScreen component must be imported above
+          options={{ headerShown: false }} // Optional: hide header
+        />
+
+<Stack.Screen
+          name="CreateAccount"
+          component={ViewImageScreen} // IndexScreen component must be imported above
+          options={{ headerShown: false }} // Optional: hide header
         />
       </Stack.Navigator>
     </NavigationContainer>

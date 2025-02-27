@@ -10,46 +10,46 @@ import {
 } from "react-native";
 
 function WelcomeScreen({ navigation }) {
-  const [isLoading, setIsLoading] = useState(true);
+  // const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    // Simulate loading for 3 seconds (you can replace this with any async task)
-    setTimeout(() => {
-      setIsLoading(false); // Hide the loading screen after 3 seconds
-    }, 300);
-  }, []);
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     //setIsLoading(false);
+  //   }, 3000);
+  // }, []);
 
-  if (isLoading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#007BFF" />
-        <Text style={styles.loadingText}>Loading...</Text>
-      </View>
-    );
-  }
+  // if (isLoading) {
+  //   return (
+  //     <View style={styles.loadingContainer}>
+  //       <ActivityIndicator size="large" color="#007BFF" />
+  //       source={ require('..//assets/logo_animation_GIF.gif') }
+  //     </View>
+  //   );
+  // }
 
   return (
     <ImageBackground
       style={styles.background}
-      source={require("../assets/k.jpg")}
-    >{/* LOGO
+   //   source={require("../assets/k.jpg")}
+    >
+      {/* Logo */}
       <View style={styles.logoContainer}>
-        <Image style={styles.logo} source={require("../assets/p.png")} />
-       <Text style={styles.tagline}>GROW YOUR OWN FOOD</Text>
+        <Image
+          style={styles.logo}
+          //source={{ uri: "https://media.giphy.com/media/1zxfeeSqszCp5MdVF1/giphy.gif" }}
+          source={ require('..//assets/gmetbgr.png') }
+        />
+         {/* Logo <Text style={styles.tagline}>GROW YOUR OWN FOOD</Text>
+    
+    */}
      </View>
-     */}
 
       {/* Login Button */}
       <TouchableOpacity
-        style={styles.logingButton}
-        onPress={() => navigation.navigate("ViewImage")} // Navigate to ViewImageScreen
+        style={styles.loginButton}
+        onPress={() => navigation.navigate("HomePage")}
       >
-        <Text style={styles.buttonText}>Login</Text>
-      </TouchableOpacity>
-
-      {/* Register Button */}
-      <TouchableOpacity style={styles.registerButton}>
-        <Text style={styles.buttonText}>Register</Text>
+        <Text style={styles.buttonText}>Check the Weather</Text>
       </TouchableOpacity>
     </ImageBackground>
   );
@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#fff", // You can change this to a background color of your choice
+    backgroundColor: "#fff",
   },
   loadingText: {
     fontSize: 18,
@@ -74,12 +74,13 @@ const styles = StyleSheet.create({
   },
   logoContainer: {
     position: "absolute",
-    top: 70,
+    top: 170,
     alignItems: "center",
   },
   logo: {
-    width: 100,
-    height: 100,
+    width: 300,
+    height: 300,
+     backgroundColor: "transparent",
   },
   tagline: {
     fontSize: 20,
@@ -88,20 +89,15 @@ const styles = StyleSheet.create({
     marginTop: 10,
     textAlign: "center",
   },
-  logingButton: {
+  loginButton: {
     width: "100%",
     height: 70,
-    backgroundColor: "black",
+    backgroundColor: "rgb(46, 147, 214)",
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 10,
-  },
-  registerButton: {
-    width: "100%",
-    height: 70,
-    backgroundColor: "orange",
-    justifyContent: "center",
-    alignItems: "center",
+    marginBottom: 200,
+    borderRadius: 50,
+    maxWidth:300
   },
   buttonText: {
     color: "white",
