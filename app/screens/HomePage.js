@@ -20,19 +20,10 @@ import {
 } from "react-native";
 ////////////////////////////////// THIS IS WHERE THE IMPORT STATMENT ENDS /////////////////////////////////////////////////
 
-
-
-
-
-
-
-
-
-
 ////////////////////////////////// THIS IS  THE CONSTANT FOR THE WIND DIRECTIONS FOR THE WEATHER FORECAST  /////////////////////////////////////////////////
 
 const getWindDirectionArrow = (deg) => {
-  if (deg >= 0 && deg <= 22 || deg >= 338 && deg <= 360) return "↑ North";
+  if ((deg >= 0 && deg <= 22) || (deg >= 338 && deg <= 360)) return "↑ North";
   if (deg >= 23 && deg <= 67) return "↗";
   if (deg >= 68 && deg <= 112) return "→";
   if (deg >= 113 && deg <= 157) return "↘";
@@ -43,14 +34,6 @@ const getWindDirectionArrow = (deg) => {
   return "❓ Unknown";
 };
 ////////////////////////////////// THIS IS WHERE THE CONSTANTS  FOR THE WIND DIRECTION ENDS/////////////////////////////////////////////////
-
-
-
-
-
-
-
-
 
 ////////////////////////////////// THIS IS  THE CONSTANT FOR THE WEATHER ICON IMAGES/////////////////////////////////////////////////
 
@@ -66,24 +49,15 @@ const getLocalWeatherImage = (condition) => {
       return require("../assets/lightrains.png"); // Replace with your local image path
     case "few clouds":
       return require("../assets/fair_day.png"); // Replace with your local image path
-      case "haze":
-        return require("../assets/fog.png"); // Replace with your local image path
-        case "clear sky":
-          return require("../assets/clearsky_day.png"); // Replace with your local image path
+    case "haze":
+      return require("../assets/fog.png"); // Replace with your local image path
+    case "clear sky":
+      return require("../assets/clearsky_day.png"); // Replace with your local image path
     default:
       return null;
   }
 };
 ////////////////////////////////// THIS IS WHERE THE CONSTANT FOR THE WEATHER ICON IMAGES ENDS /////////////////////////////////////////////////
-
-
-
-
-
-
-
-
-
 
 ////////////////////////////////// THIS IS THE CONSTANT FOR THE DAILY FORECAST STARTS /////////////////////////////////////////////////
 
@@ -92,13 +66,15 @@ const processDailyForecast = (forecastData) => {
 
   forecastData.list.forEach((entry) => {
     const date = new Date(entry.dt * 1000).toDateString();
+    
     if (!dailyData[date]) {
       dailyData[date] = {
         date: date,
         minTemp: entry.main.temp_min,
         maxTemp: entry.main.temp_max,
-        icon: `https://openweathermap.org/img/wn/${entry.weather[0].icon}.png`,
-        condition: entry.weather[0].description,
+        description: entry.weather[0]?.description || "Unknown",
+        condition: entry.weather[0]?.description,
+        localImage: getLocalWeatherImage(entry.weather[0]?.description), // Use local image
       };
     } else {
       dailyData[date].minTemp = Math.min(dailyData[date].minTemp, entry.main.temp_min);
@@ -106,41 +82,31 @@ const processDailyForecast = (forecastData) => {
     }
   });
 
-  return Object.values(dailyData).slice(0, 5); // Get only the next 5 days
+  return Object.values(dailyData).slice(0, 5);
 };
+
+
 ////////////////////////////////// THIS IS THE CONSTANT FOR THE DAILY FORECAST ENDS /////////////////////////////////////////////////
 
-
-
-
-
-
-
-
-{/*THIS PLACE IS OUT OF COMMMITION FOR NOW */}
+{
+  /*THIS PLACE IS OUT OF COMMMITION FOR NOW */
+}
 const ghanaCities = [
-  { name: "Accra", region: "Greater Accra", lat: 5.6037, lon: -0.1870 },
+  { name: "Accra", region: "Greater Accra", lat: 5.6037, lon: -0.187 },
   { name: "Kumasi", region: "Ashanti", lat: 6.6666, lon: -1.6163 },
-  { name: "Tamale", region: "Northern", lat: 9.4075, lon: -0.8530 },
+  { name: "Tamale", region: "Northern", lat: 9.4075, lon: -0.853 },
   { name: "Takoradi", region: "Western", lat: 4.8926, lon: -1.7519 },
   { name: "Cape Coast", region: "Central", lat: 5.1054, lon: -1.2466 },
-  { name: "Sunyani", region: "Bono", lat: 7.3330, lon: -2.3330 },
+  { name: "Sunyani", region: "Bono", lat: 7.333, lon: -2.333 },
   { name: "Ho", region: "Volta", lat: 6.6008, lon: 0.4713 },
   { name: "Bolgatanga", region: "Upper East", lat: 10.7856, lon: -0.8514 },
-  { name: "Wa", region: "Upper West", lat: 10.0600, lon: -2.5000 },
+  { name: "Wa", region: "Upper West", lat: 10.06, lon: -2.5 },
   { name: "Koforidua", region: "Eastern", lat: 6.0904, lon: -0.2608 },
   { name: "Techiman", region: "Bono East", lat: 7.5833, lon: -1.9333 },
 ];
-{/*THIS PLACE IS OUT OF COMMMITION FOR NOW */}
-
-
-
-
-
-
-
-
-
+{
+  /*THIS PLACE IS OUT OF COMMMITION FOR NOW */
+}
 
 ////////////////////////////////// THIS IS THE CONSTANT FOR THE CORRECT CITY NAMES FOR THE SEARCH AND DISPLAY /////////////////////////////////////////////////
 const correctCityName = (city) => {
@@ -155,14 +121,6 @@ const correctCityName = (city) => {
   return corrections[city] || city;
 };
 ////////////////////////////////// THIS IS THE CONSTANT FOR THE CORRECT CITY NAMES FOR THE SEARCH AND DISPLAY ENDS /////////////////////////////////////////////////
-
-
-
-
-
-
-
-
 
 ////////////////////////////////// THIS IS THE CONSTANT FOR THE SERCH FUNCTIONALITIES  /////////////////////////////////////////////////
 const HomePage = ({ setSearchCity, searchCity, handleSearch }) => {
@@ -182,15 +140,6 @@ const HomePage = ({ setSearchCity, searchCity, handleSearch }) => {
 };
 ////////////////////////////////// THIS IS THE CONSTANT FOR THE SERCH FUNCTIONALITIES ENDS /////////////////////////////////////////////////
 
-
-
-
-
-
-
-
-
-
 ////////////////////////////////// THIS IS THE CONSTANT FOR ADDING NEW FUNCTIONALITIES OR DISPLAYS TO THE APP LIKE STARTS  /////////////////////////////////////////////////
 const Content = () => {
   const [currentWeather, setCurrentWeather] = useState(null);
@@ -203,17 +152,6 @@ const Content = () => {
   const apiKey = "aa39f484a324f3970d43e82d0856b259";
   ////////////////////////////////// THIS IS THE CONSTANT FOR ADDING NEW FUNCTIONALITIES OR DISPLAYS TO THE APP ENDS /////////////////////////////////////////////////
 
-
-
-
-
-
-
-
-
-
-
-
   ////////////////////////////////// THIS IS THE FUNCTION FOR GETTING THE WEATHER LOCATION STARTS /////////////////////////////////////////////////
   useEffect(() => {
     setTimeout(() => {
@@ -223,45 +161,27 @@ const Content = () => {
   }, []);
   ////////////////////////////////// THIS IS THE FUNCTION FOR GETTING THE WEATHER LOCATION ENDS  /////////////////////////////////////////////////
 
-
-
-
-
-
-
-
-
-
   ////////////////////////////////// THIS IS THE FUNCTION FOR GETTING THE WEATHER DATA FROM THE LOCATION STARTS /////////////////////////////////////////////////
   const fetchWeatherData = async (url) => {
     try {
       const response = await fetch(url);
-      if (!response.ok) throw new Error(`HTTP Error! Status: ${response.status}`);
+      if (!response.ok)
+        throw new Error(`HTTP Error! Status: ${response.status}`);
       return await response.json();
     } catch (error) {
       console.error("Error fetching weather data:", error);
       return null; // Prevents app from crashing
     }
   };
-  
+
   ////////////////////////////////// THIS IS THE FUNCTION FOR GETTING THE WEATHER DATA FROM THE LOCATION STARTS ENDS /////////////////////////////////////////////////
-
-
-
-
-
-
-
-
-
-
 
   ////////////////////////////////// THIS IS THE FUNCTION FOR GETTING NEAREST LOCATION FOR THE GOELOACTION STARTS  /////////////////////////////////////////////////
 
   const findNearestCity = (lat, lon, cities) => {
     let nearestCity = null;
     let minDistance = Infinity;
-  
+
     cities.forEach((city) => {
       const distance = getDistance(lat, lon, city.lat, city.lon);
       if (distance < minDistance) {
@@ -269,121 +189,111 @@ const Content = () => {
         nearestCity = city;
       }
     });
-  
+
     return nearestCity;
   };
-  
+
   // Function to calculate distance between two coordinates
   const getDistance = (lat1, lon1, lat2, lon2) => {
     const toRad = (deg) => (deg * Math.PI) / 180;
     const R = 6371; // Radius of Earth in km
-  
+
     const dLat = toRad(lat2 - lat1);
     const dLon = toRad(lon2 - lon1);
     const a =
       Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
-      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      Math.cos(toRad(lat1)) *
+        Math.cos(toRad(lat2)) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  
+
     return R * c; // Distance in km
   };
   ////////////////////////////////// THIS IS THE FUNCTION FOR GETTING NEAREST LOCATION FOR THE GOELOACTION  ENDS /////////////////////////////////////////////////
 
-
-
-
-
-
-
-
-
   ////////////////////////////////// THIS IS THE FUNCTION FOR GETTING THE GOELOCATIONS AND GETTING THE WEATHER DATA TO DIOSPLAY THEM  /////////////////////////////////////////////////
   const getCurrentLocationWeather = async () => {
     const apiKey = "aa39f484a324f3970d43e82d0856b259";
-    const defaultCity = { name: "Accra", lat: 5.6037, lon: -0.1870 };
+    const defaultCity = { name: "Accra", lat: 5.6037, lon: -0.187 };
 
     // List of major cities in Ghana with their coordinates
     const majorCities = [
-        { name: "Accra", lat: 5.6037, lon: -0.1870 },
-        { name: "Kumasi", lat: 6.6920, lon: -1.6150 },
-        { name: "Tamale", lat: 9.4008, lon: -0.8393 },
-        { name: "Takoradi", lat: 4.8932, lon: -1.7554 },
-        { name: "Cape Coast", lat: 5.1054, lon: -1.2466 },
-        { name: "Sunyani", lat: 7.3399, lon: -2.3268 },
-        { name: "Ho", lat: 6.6000, lon: 0.4700 },
-        { name: "Bolgatanga", lat: 10.7856, lon: -0.8514 },
-        { name: "Wa", lat: 10.0600, lon: -2.5000 },
-        { name: "Koforidua", lat: 6.0910, lon: -0.2591 },
+      { name: "Accra", lat: 5.6037, lon: -0.187 },
+      { name: "Kumasi", lat: 6.692, lon: -1.615 },
+      { name: "Tamale", lat: 9.4008, lon: -0.8393 },
+      { name: "Takoradi", lat: 4.8932, lon: -1.7554 },
+      { name: "Cape Coast", lat: 5.1054, lon: -1.2466 },
+      { name: "Sunyani", lat: 7.3399, lon: -2.3268 },
+      { name: "Ho", lat: 6.6, lon: 0.47 },
+      { name: "Bolgatanga", lat: 10.7856, lon: -0.8514 },
+      { name: "Wa", lat: 10.06, lon: -2.5 },
+      { name: "Koforidua", lat: 6.091, lon: -0.2591 },
     ];
 
     try {
-        let { status } = await Location.requestForegroundPermissionsAsync();
-        let latitude, longitude;
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      let latitude, longitude;
 
-        if (status === "granted") {
-            let location = await Location.getCurrentPositionAsync({});
-            latitude = location.coords.latitude;
-            longitude = location.coords.longitude;
-        } else {
-            console.warn("Location permission denied. Using default city: Accra.");
-            latitude = defaultCity.lat;
-            longitude = defaultCity.lon;
-        }
+      if (status === "granted") {
+        let location = await Location.getCurrentPositionAsync({});
+        latitude = location.coords.latitude;
+        longitude = location.coords.longitude;
+      } else {
+        console.warn("Location permission denied. Using default city: Accra.");
+        latitude = defaultCity.lat;
+        longitude = defaultCity.lon;
+      }
 
-        // Find the nearest major city
-        const nearestCity = findNearestCity(latitude, longitude, majorCities) || defaultCity;
-        console.log(`Displaying weather for: ${nearestCity.name}`);
+      // Find the nearest major city
+      const nearestCity =
+        findNearestCity(latitude, longitude, majorCities) || defaultCity;
+      console.log(`Displaying weather for: ${nearestCity.name}`);
 
-        // Fetch weather data for the nearest major city
-        const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?units=metric&lat=${nearestCity.lat}&lon=${nearestCity.lon}&appid=${apiKey}`;
-        const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?units=metric&lat=${nearestCity.lat}&lon=${nearestCity.lon}&appid=${apiKey}`;
+      // Fetch weather data for the nearest major city
+      const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?units=metric&lat=${nearestCity.lat}&lon=${nearestCity.lon}&appid=${apiKey}`;
+      const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?units=metric&lat=${nearestCity.lat}&lon=${nearestCity.lon}&appid=${apiKey}`;
 
-        const currentData = await fetchWeatherData(weatherUrl);
-        const forecastData = await fetchWeatherData(forecastUrl);
+      const currentData = await fetchWeatherData(weatherUrl);
+      const forecastData = await fetchWeatherData(forecastUrl);
 
-        if (currentData && forecastData) {
-            setCurrentWeather({
-                city: nearestCity.name,
-                temperature: currentData.main.temp,
-                description: currentData.weather[0]?.description || "Unknown",
-                icon: `https://openweathermap.org/img/wn/${currentData.weather[0]?.icon}.png`,
-                localImage: getLocalWeatherImage(currentData.weather[0]?.description),
-            });
+      if (currentData && forecastData) {
+        setCurrentWeather({
+          city: nearestCity.name,
+          temperature: currentData.main.temp,
+          description: currentData.weather[0]?.description || "Unknown",
+          icon: `https://openweathermap.org/img/wn/${currentData.weather[0]?.icon}.png`,
+          localImage: getLocalWeatherImage(currentData.weather[0]?.description),
+        });
 
-            setHourlyForecast(forecastData.list.slice(0, 4));
-            setDailyForecast(processDailyForecast(forecastData));
-        }
+        setHourlyForecast(forecastData.list.slice(0, 4));
+        setDailyForecast(processDailyForecast(forecastData));
+      }
 
-        setIsLoading(false);
+      setIsLoading(false);
     } catch (error) {
-        console.error("Error fetching current location weather:", error);
+      console.error("Error fetching current location weather:", error);
     }
-};
+  };
 
-  
   ////////////////////////////////// THIS IS THE FUNCTION FOR GETTING THE GOELOCATIONS AND GETTING THE WEATHER DATA TO DIOSPLAY THEM ENDS /////////////////////////////////////////////////
 
-
-
-
-
-
-
-
-
-
-
-
-
   ////////////////////////////////// THIS IS THE CONSTANT FOR THE VIEW OF THE DAILY FORECAST STARTS /////////////////////////////////////////////////
+
   const renderDailyForecast = ({ item }) => (
     <View style={styles.dailyForecastCard}>
       <Text style={styles.day}>{item.date.split(" ")[0]}</Text>
-      <Image source={{ uri: item.icon }} style={styles.forecastIcon} />
-      <Text style={styles.temp}>{Math.floor(item.minTemp)}° / {Math.floor(item.maxTemp)}°</Text>
+      <Image source={item.localImage} style={styles.dailyforecastIcon} /> 
+      <Text style={styles.temp}>
+        {Math.floor(item.minTemp)}° / {Math.floor(item.maxTemp)}°
+      </Text>
     </View>
   );
+  
+
+  
+
+  
 
   if (showPreloader) {
     return (
@@ -394,39 +304,20 @@ const Content = () => {
   }
   ////////////////////////////////// THIS IS THE CONSTANT FOR THE VIEW OF THE DAILY FORECAST ENDS /////////////////////////////////////////////////
 
-
-
-
-
-
-
-
-
-
-
   ////////////////////////////////// THIS IS THE FUNCTION IF SOMEONE CLICKS ON THE SEARCH ICON WITHOUT ENTERING THE CITY NAME STARTS /////////////////////////////////////////////////
   const fetchCityWeather = async () => {
     if (!searchCity.trim()) {
       console.error("No city selected.");
       return;
     }
-    
 
-   if (!searchCity.trim()) {
-  console.error("No city entered.");
-  return;
-}
-  ////////////////////////////////// THIS IS THE FUNCTION IF SOMEONE CLICKSON THE SEARCH ICON WITHOUT ENTERING THE CITY NAME ENDS /////////////////////////////////////////////////
+    if (!searchCity.trim()) {
+      console.error("No city entered.");
+      return;
+    }
+    ////////////////////////////////// THIS IS THE FUNCTION IF SOMEONE CLICKSON THE SEARCH ICON WITHOUT ENTERING THE CITY NAME ENDS /////////////////////////////////////////////////
 
-
-
-
-
-
-
-
-
-  ////////////////////////////////// THIS IS THE FUNCTION FOR IF SOMEONE ENTERS THE CITY NAME FOR THE API TO SEARCH FOR THE CURRENT WEATHER AND ITS CURRENT WEATHER FORCAST STARTS TO DISPLAY ITS  INFORMATION (EG.WEATHER ICON, WEATHER FORECAST DATA... ) /////////////////////////////////////////////////
+    ////////////////////////////////// THIS IS THE FUNCTION FOR IF SOMEONE ENTERS THE CITY NAME FOR THE API TO SEARCH FOR THE CURRENT WEATHER AND ITS CURRENT WEATHER FORCAST STARTS TO DISPLAY ITS  INFORMATION (EG.WEATHER ICON, WEATHER FORECAST DATA... ) /////////////////////////////////////////////////
     setIsLoading(true);
     const correctedCity = searchCity.trim(); // Just use what the user entered
 
@@ -443,7 +334,8 @@ const Content = () => {
       const forecastData = await fetchWeatherData(forecastUrl);
 
       if (currentData && forecastData) {
-        const weatherCondition = currentData?.weather?.[0]?.description || "Unknown";
+        const weatherCondition =
+          currentData?.weather?.[0]?.description || "Unknown";
 
         setCurrentWeather({
           city: currentData.name,
@@ -455,10 +347,9 @@ const Content = () => {
           windSpeed: currentData.wind.speed,
           windDirection: currentData.wind.deg,
         });
-    
-        setHourlyForecast(filterHourlyForecast(forecastData.list));
-                setDailyForecast(processDailyForecast(forecastData)); // ✅ Now fetches daily forecast
 
+        //setHourlyForecast(filterHourlyForecast(forecastData.list));
+        setDailyForecast(processDailyForecast(forecastData)); // ✅ Now fetches daily forecast
       }
 
       if (currentData && currentData.weather) {
@@ -482,19 +373,6 @@ const Content = () => {
   };
   ////////////////////////////////// THIS IS THE FUNCTION FOR IF SOMEONE ENTERS THE CITY NAME FOR THE API TO SEARCH FOR THE CURRENT WEATHER AND ITS CURRENT WEATHER FORCAST STARTS TO DISPLAY ITS  INFORMATION (EG.WEATHER ICON, WEATHER FORECAST DATA... ENDS ) /////////////////////////////////////////////////
 
-
-
-
-
-
-
-
-
-
-
-
-
-
   /////////////////////////////////////////////// THIS IS THE FUNCTION FOR THE FORECAST TO GET THE CURRENT LOCATION DATE, HOUR, WEATHER CONDITIONS AND WEATHER ICONS WIND DIRECTION AND WIND ARROW STARTS AND DISPLAYS THEM STARTS ) /////////////////////////////////////////////////
   const renderForecast = ({ item }) => {
     const date = new Date(item.dt * 1000);
@@ -503,10 +381,10 @@ const Content = () => {
     const localImage = getLocalWeatherImage(weatherCondition);
 
     ////////////////////////////////////////////////////////////////// Get wind direction in degrees
-  const windDeg = item.wind.deg; // Make sure it's coming from the API
+    const windDeg = item.wind.deg; // Make sure it's coming from the API
 
-  ///////////////////////////////////////////////////////////Convert wind direction to arrow
-  const windArrow = getWindDirectionArrow(windDeg);
+    ///////////////////////////////////////////////////////////Convert wind direction to arrow
+    const windArrow = getWindDirectionArrow(windDeg);
 
     return (
       <View style={styles.forecastCard}>
@@ -528,27 +406,16 @@ const Content = () => {
             {Math.floor(item.wind.speed)} m/s
           </Text>
           <Text style={styles.forecastWind}>
-          {/* {windArrow} ({windDeg}°) */}
-          {windArrow}
-        </Text>
+            {/* {windArrow} ({windDeg}°) */}
+            {windArrow}
+          </Text>
         </View>
 
         {/* <Text style={styles.forecastTemp}>{weatherCondition}</Text> */}
       </View>
-      
     );
   };
   ////////////////////////////////// THIS IS THE FUNCTION FOR THE FORECAST TO GET THE CURRENT LOCATION DATE, HOUR, WEATHER CONDITIONS AND WEATHER ICONS WIND DIRECTION AND WIND ARROW STARTS AND DISPLAYS THEM ENDS  ) /////////////////////////////////////////////////
-
-
-
-
-
-
-
-
-
-
 
   ////////////////////////////////// THIS IS THE FUNCTION THAT HANDLES THE URLS FORM THE APP TO THE BROWER ) /////////////////////////////////////////////////
   const handlePress = (url) => {
@@ -563,16 +430,6 @@ const Content = () => {
   };
   ////////////////////////////////// THIS IS THE FUNCTION THAT HANDLES THE URLS FORM THE APP TO THE BROWER ENDS) /////////////////////////////////////////////////
 
-
-
-
-
-
-
-
-
-
-
   ////////////////////////////////// THIS IS THE FUNCTION THE PRE LOADER STARTS) /////////////////////////////////////////////////
   if (showPreloader) {
     return (
@@ -586,16 +443,6 @@ const Content = () => {
     );
   }
   ////////////////////////////////// THIS IS THE FUNCTION THE PRE LOADER ENDS) /////////////////////////////////////////////////
-
-
-
-
-
-
-
-
-
-
 
   ////////////////////////////////// THIS IS CONSTANT FOR DISPLAYING THE PRODUCTS SECTION OF THE APP STARTS) /////////////////////////////////////////////////
   const products = [
@@ -620,15 +467,7 @@ const Content = () => {
   ];
   ////////////////////////////////// THIS IS CONSTANT FOR DISPLAYING THE PRODUCTS SECTION OF THE APP STARTS ENDS ) /////////////////////////////////////////////////
 
-
-
-
-
-
-  
-
-
-    ////////////////////////////////// THIS IS HANDLES EVERYTHING THAT DISPLAYS ON THE APP THAT FALLS WITHIN THE BACKGROUND PIC STARTS) /////////////////////////////////////////////////
+  ////////////////////////////////// THIS IS HANDLES EVERYTHING THAT DISPLAYS ON THE APP THAT FALLS WITHIN THE BACKGROUND PIC STARTS) /////////////////////////////////////////////////
   return (
     <ImageBackground
       source={require("../assets/background/background-hot.jpeg")}
@@ -652,40 +491,40 @@ const Content = () => {
           <>
             {/*/////////////////////////////////////////////////////////////////////////////////////// Weather Info Section */}
             <View style={styles.weatherInfoSpace}>
-  {currentWeather ? (
-    <>
-      <Text style={styles.weatherCity}>{currentWeather.city}</Text>
+              {currentWeather ? (
+                <>
+                  <Text style={styles.weatherCity}>{currentWeather.city}</Text>
 
-      {/*//////////////////////////////////////////////////////////////////////////// Aligning Icon & Temperature in a Row */}
-      <View style={{ flexDirection: "row", alignItems: "center" }}>
-        {currentWeather.localImage ? (
-          <Image source={currentWeather.localImage} style={styles.CurrentIcon} />
-        ) : (
-          <Image
-            source={{
-              uri: `https://openweathermap.org/img/wn/${currentWeather.icon}.png`,
-            }}
-            style={styles.CurrentIcon}
-          />
-        )}
-        <Text style={styles.weatherTemperature}>
-          {Math.floor(currentWeather.temperature)}°
-        </Text>
-      </View>
+                  {/*//////////////////////////////////////////////////////////////////////////// Aligning Icon & Temperature in a Row */}
+                  <View style={{ flexDirection: "row", alignItems: "center" }}>
+                    {currentWeather.localImage ? (
+                      <Image
+                        source={currentWeather.localImage}
+                        style={styles.CurrentIcon}
+                      />
+                    ) : (
+                      <Image
+                        source={{
+                          uri: `https://openweathermap.org/img/wn/${currentWeather.icon}.png`,
+                        }}
+                        style={styles.CurrentIcon}
+                      />
+                    )}
+                    <Text style={styles.weatherTemperature}>
+                      {Math.floor(currentWeather.temperature)}°
+                    </Text>
+                  </View>
 
-      <Text style={styles.weatherDescription}>
-        {currentWeather.description}
-      </Text>
-    </>
-  ) : (
-    <Text style={styles.loadingText}>Fetching location weather...</Text>
-  )}
-</View>
-
-
-
-
-
+                  <Text style={styles.weatherDescription}>
+                    {currentWeather.description}
+                  </Text>
+                </>
+              ) : (
+                <Text style={styles.loadingText}>
+                  Fetching location weather...
+                </Text>
+              )}
+            </View>
 
             {/* /////////////////////////////////////////////////////////////////////////////////Hourly Forecast Section */}
             <View style={styles.forecastContainer}>
@@ -696,27 +535,25 @@ const Content = () => {
                   renderItem={renderForecast}
                   keyExtractor={(item, index) => index.toString()}
                   horizontal
-                  showsHorizontalScrollIndicator={true}
+                  showsHorizontalScrollIndicator={false}
                   contentContainerStyle={styles.forecastList}
                 />
               </View>
             </View>
 
             <View style={styles.dailyForecastContainer}>
-  <Text style={styles.dailyForecastTitle}>5-Day Weather Forecast</Text>
-  <FlatList
-    data={dailyForecast}
-    renderItem={renderDailyForecast}
-    keyExtractor={(item, index) => index.toString()}
-    horizontal
-    showsHorizontalScrollIndicator={false}
-    contentContainerStyle={styles.dailyForecastList}
-  />
-</View>
-
-
-
-
+              <Text style={styles.dailyForecastTitle}>
+                5-Day Weather Forecast
+              </Text>
+              <FlatList
+                data={dailyForecast}
+                renderItem={renderDailyForecast}
+                keyExtractor={(item, index) => index.toString()}
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.dailyForecastList}
+              />
+            </View>
 
             {/*/////////////////////////////////////////////////////////////////// Our Products Section */}
             <View style={styles.productsContainer}>
@@ -743,8 +580,6 @@ const Content = () => {
         )}
       </ScrollView>
 
-
-
       {/* //////////////////////////////////////////////////////////////////////////////////Footer with navigation */}
       <View style={styles.footer}>
         <TouchableOpacity
@@ -762,16 +597,9 @@ const Content = () => {
     </ImageBackground>
   );
 };
-    ////////////////////////////////// THIS IS HANDLES EVERYTHING THAT DISPLAYS ON THE APP THAT FALLS WITHIN THE BACKGROUND PIC STARTS) /////////////////////////////////////////////////
+////////////////////////////////// THIS IS HANDLES EVERYTHING THAT DISPLAYS ON THE APP THAT FALLS WITHIN THE BACKGROUND PIC STARTS) /////////////////////////////////////////////////
 
-    ////////////////////////////////// THIS IS HANDLES EVERYTHING THAT DISPLAYS ON THE APP THAT FALLS WITHIN THE BACKGROUND PIC ENDS ) /////////////////////////////////////////////////
-
-
-
-
-
-
-
+////////////////////////////////// THIS IS HANDLES EVERYTHING THAT DISPLAYS ON THE APP THAT FALLS WITHIN THE BACKGROUND PIC ENDS ) /////////////////////////////////////////////////
 
 const styles = StyleSheet.create({
   //The entire Screen Container
@@ -797,9 +625,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  preloaderSpinner:{
-    alignItems:"center",
-    justifyContent:"center"
+  preloaderSpinner: {
+    alignItems: "center",
+    justifyContent: "center",
   },
   searchContainer: {
     flexDirection: "row",
@@ -832,7 +660,7 @@ const styles = StyleSheet.create({
   },
   weatherTemperature: {
     fontSize: 70,
-    marginLeft:20,
+    marginLeft: 20,
     color: "#fff",
   },
   weatherDescription: {
@@ -846,8 +674,8 @@ const styles = StyleSheet.create({
     height: 100,
   },
   weatherInfoSpace: {
-    marginTop:60,
-    marginBottom:150,
+    marginTop: 60,
+    marginBottom: 150,
     height: "auto",
     //backgroundColor: "rgba(255,255,255,0.3)",
     marginVertical: 20,
@@ -872,11 +700,35 @@ const styles = StyleSheet.create({
     paddingStart: 20,
     paddingEnd: 20,
   },
+  day:{
+    color:"white",
+    fontWeight:"bold",
+    marginEnd:50,
+    marginTop:10
+  },
+  dailyforecastIcon: {
+    width: 40,
+    height: 40,
+    marginHorizontal:50,
+  },
+  temp:{
+    color:"white",
+    fontWeight:"bold",
+    marginStart:50,
+    marginTop:10
+  },
+  dailyForecastCard: {
+    flex:1,
+    flexDirection:"row",
+    borderTopWidth:1,
+    borderBottomWidth:1,
+    borderColor: "rgba(255, 255, 255, 0.2)",
+    padding:10,
+    marginHorizontal:20
+  },
   productsContainer: {
-    marginVertical: 20,
-    top: -100,
-    paddingStart: 20,
-    paddingEnd: 20,
+    marginTop:40,
+    marginHorizontal:20
   },
   productsBackground: {
     borderRadius: 20,
@@ -981,31 +833,33 @@ const styles = StyleSheet.create({
   forecastIcon: {
     width: 60,
     height: 60,
-    marginTop: 60,
-    marginStart: -10,
+    marginTop:60,
+    marginStart:-10,
   },
-  CurrentIcon:{
+  CurrentIcon: {
     width: 70,
     height: 70,
     //marginTop: 60,
     //marginStart: -10,
   },
 
-
   dailyForecastContainer: {
-    marginTop: 20,
-    padding: 0,
-    top:-90,
+    marginHorizontal: 20,
+    borderWidth:1,
+    borderRadius:20,
+    borderColor:"rgba(255, 255, 255, 0.2)",
+    //marginBottom:20
 
   },
   dailyForecastTitle: {
     fontSize: 18,
     fontWeight: "bold",
     color: "#F8FAFC", // Light text color
-    marginBottom: 10,
+    margin:20
   },
   dailyForecastList: {
-    paddingVertical: 5,
+    flex:1,
+    flexDirection:"column",
   },
 
   footer: {
