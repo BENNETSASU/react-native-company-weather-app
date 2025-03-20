@@ -4,7 +4,7 @@ import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import Icon from "react-native-vector-icons/FontAwesome";
 import * as Location from "expo-location";
 import { useNavigation } from "@react-navigation/native";
-import Ionicons from '@expo/vector-icons/Ionicons';
+import Ionicons from "@expo/vector-icons/Ionicons";
 import {
   View,
   StyleSheet,
@@ -19,18 +19,35 @@ import {
 } from "react-native";
 
 
+
+
+
+
+
+
+
+
+
+
+
 const getLocalWeatherImage = (condition) => {
   switch (condition.toLowerCase()) {
     case "scattered clouds":
-      return require("../assets/clearsky_day.png");
+      return require("../assets/clearsky_day.png"); // Replace with your local image path
     case "broken clouds":
-      return require("../assets/fair_day.png");
+      return require("../assets/fair_day.png"); // Replace with your local image path
     case "overcast clouds":
-      return require("../assets/cloudy.png");
+      return require("../assets/cloudy.png"); // Replace with your local image path
     case "light rain":
-      return require("../assets/lightrains.png");
+      return require("../assets/lightrains.png"); // Replace with your local image path
+    case "few clouds":
+      return require("../assets/fair_day.png"); // Replace with your local image path
+    case "haze":
+      return require("../assets/fog.png"); // Replace with your local image path
+    case "clear sky":
+      return require("../assets/clearsky_day.png"); // Replace with your local image path
     default:
-      return null; // Provide a fallback image
+      return null;
   }
 };
 
@@ -38,17 +55,28 @@ const getLocalWeatherImage = (condition) => {
 
 
 
-
-const temperatureData = {
-  labels: ["0h", "1h", "2h", "3h", "4h", "5h"], // Time labels
-  datasets: [
-    {
-      data: [22, 24, 25, 23, 26, 27], // Example temperature data
-      strokeWidth: 2, // Thickness of the line
-      color: (opacity = 1) => `rgba(255, 99, 132, ${opacity})`, // Color of the line
-    },
-  ],
+const getTemperatureColor = (temp) => {
+  // Adjust these thresholds based on Ghana's climate
+  // Blue for cool, red for hot
+  if (temp <= 20) return 'rgb(0, 0, 255)'; // Cool - Blue
+  if (temp <= 24) return 'rgb(0, 100, 255)';
+  if (temp <= 27) return 'rgb(0, 200, 255)';
+  if (temp <= 30) return 'rgb(255, 255, 0)'; // Yellow for moderate
+  if (temp <= 33) return 'rgb(255, 100, 0)';
+  return 'rgb(255, 0, 0)'; // Hot - Red
 };
+
+
+
+
+
+
+
+
+
+
+
+
 
 const correctCityName = (city) => {
   const corrections = {
@@ -92,14 +120,49 @@ const Content = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [userLocation, setUserLocation] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [heatMapMode, setHeatMapMode] = useState(false);
+
+  const toggleHeatMap = () => {
+    setHeatMapMode(prev => !prev);
+  };
+  
+  
+
+
   const [region, setRegion] = useState({
     //// the  map funtion to zoom in and zoom out
     latitude: 7.9465,
     longitude: -1.0232, /////this is whwere you zoom in and out
-    latitudeDelta: 10.6,
-    longitudeDelta: 10,
+    latitudeDelta: 6.6,
+    longitudeDelta: 6,
   });
+
+
+  const zoomIn = () => {
+    setRegion((prev) => ({
+      ...prev,
+      latitudeDelta: prev.latitudeDelta * 0.8,
+      longitudeDelta: prev.longitudeDelta * 0.8,
+    }));
+  };
+
+  const zoomOut = () => {
+    setRegion((prev) => ({
+      ...prev,
+      latitudeDelta: prev.latitudeDelta * 1.2,
+      longitudeDelta: prev.longitudeDelta * 1.2,
+    }));
+  };
+
   const [markers, setMarkers] = useState([]);
+
+
+
+
+
+
+
+
 
   useEffect(() => {
     getCurrentLocationWeather();
@@ -119,47 +182,19 @@ const Content = () => {
       });
 
       // Update charts data
-      setTemperatureData((prev) => ({
-        ...prev,
-        datasets: [
-          {
-            ...prev.datasets[0],
-            data: [...prev.datasets[0].data, weatherData.main.temp],
-          },
-        ],
-      }));
 
-      setWindSpeedData((prev) => ({
-        ...prev,
-        datasets: [
-          {
-            ...prev.datasets[0],
-            data: [...prev.datasets[0].data, weatherData.wind.speed],
-          },
-        ],
-      }));
 
-      setHumidityData((prev) => ({
-        ...prev,
-        datasets: [
-          {
-            ...prev.datasets[0],
-            data: [...prev.datasets[0].data, weatherData.main.humidity],
-          },
-        ],
-      }));
+
     }
   };
 
   const fetchWeatherData = async (url) => {
     try {
-      //console.log("Fetching weather data from:", url); // Log the URL to check if it's correct.
       const response = await fetch(url);
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
       const data = await response.json();
-      //console.log("Weather data fetched:", data); // Log the data to check the response.
       return data;
     } catch (error) {
       console.error("Error fetching weather data:", error);
@@ -176,10 +211,9 @@ const Content = () => {
           return {
             ...region,
             temperature: Math.round(data.main.temp),
-           
+
             icon: `https://openweathermap.org/img/wn/${data.weather[0].icon}.png`,
             description: data.weather[0]?.description || "unknown", // Ensure it's defined
-
           };
         }
         return null;
@@ -200,7 +234,6 @@ const Content = () => {
       return;
     }
     let location = await Location.getCurrentPositionAsync({});
-    //console.log("Current location fetched:", location.coords); // Log the location to verify.
 
     const { latitude, longitude } = location.coords;
     setUserLocation({ latitude, longitude });
@@ -244,7 +277,6 @@ const Content = () => {
         windSpeed: searchData.wind.speed,
         windDirection: searchData.wind.deg,
         humidity: searchData.main.humidity,
-        
       });
     }
   };
@@ -280,54 +312,37 @@ const Content = () => {
   return (
     <View style={styles.parentcontainer}>
       <ImageBackground
-        source={require("../assets/background/Background Image.png")}
+        //source={require("../assets/background/Background Image.png")}
         style={styles.background}
         resizeMode="cover"
       >
-  
-        <View style={styles.activityTitle}>
-        <TouchableOpacity
-          onPress={() => navigation.navigate("HomeScreen")}
-        >
-          <Ionicons name="arrow-back" size={24} color="#fff" />
-        </TouchableOpacity>
-          <Text style={styles.activityTitleText}>Map Viewer</Text>
-        </View>
-
         <View style={styles.childcontainer}>
           <ScrollView contentContainerStyle={styles.scrollContainer}>
-            {/* ************Map View Below********************* */}
-            <TouchableOpacity
-              onPress={handleSearch}
-              style={styles.locateButton}
-            >
-              <Icon name="map-marker" size={30} color="#fff" />
+            
+            <View style={styles.arrow}>
+            <TouchableOpacity onPress={() => navigation.navigate("HomeScreen")}>
+              <Ionicons name="arrow-back" size={30} color="#000" />
             </TouchableOpacity>
+            </View>
 
+
+            {/* ************Map View Below********************* */}
+            
             <MapView
-              style={styles.map}
+
+              style={StyleSheet.absoluteFillObject} // Makes map cover the full screen
               region={region}
+              onRegionChangeComplete={(newRegion) => setRegion(newRegion)} // Track zoom changes
+
               onPress={handleMapClick}
+
+
+              
+        
             >
-              {/* {userLocation && (
-                <Marker coordinate={userLocation} title="You are here" />
-              )} */}
-              {markers.map((marker, index) => (
-                <Marker
-                  key={index}
-                  coordinate={{
-                    latitude: marker.latitude,
-                    longitude: marker.longitude,
-                  }}
-                  title={marker.title}
-                >
-                  <View style={styles.markerContainer}>
-                    {/* <Image source={{ uri: marker.icon }} style={styles.weatherIcon} /> */}
-                    {/* <Text style={styles.markerText}>{Math.round(marker.temperature)}°C</Text> */}
-                  </View>
-                </Marker>
-              ))}
-             {regionWeather.map((region, index) => (
+
+              
+{regionWeather.map((region, index) => (
   <Marker
     key={index}
     coordinate={{
@@ -337,16 +352,91 @@ const Content = () => {
     title={region.name}
   >
     <View style={styles.markerContainer}>
-      <Image
-        source={getLocalWeatherImage(region.description)} // Use local image
-        style={styles.weatherIcon}
-      />
-      <Text style={styles.markerText}>{region.temperature}°C</Text>
+      {heatMapMode ? (
+        <View style={[
+          styles.heatMapMarker, 
+          {backgroundColor: getTemperatureColor(region.temperature)}
+        ]}>
+          <Text style={[styles.markerText, {color: region.temperature > 27 ? 'white' : 'black'}]}>
+            {region.temperature}°C
+          </Text>
+        </View>
+      ) : (
+        <>
+          <Image
+            source={getLocalWeatherImage(region.description)}
+            style={styles.weatherIcon}
+          />
+          <Text style={styles.markerText}>
+            {region.temperature}°C
+          </Text>
+        </>
+      )}
     </View>
   </Marker>
 ))}
-
             </MapView>
+    
+<View style={styles.zoomContainer}>
+  <TouchableOpacity onPress={zoomIn} style={styles.zoomButton}>
+    <Text style={styles.zoomText}>+</Text>
+  </TouchableOpacity>
+  <TouchableOpacity onPress={zoomOut} style={styles.zoomButton}>
+    <Text style={styles.zoomText}>-</Text>
+  </TouchableOpacity>
+  <TouchableOpacity onPress={toggleHeatMap} style={[styles.zoomButton, heatMapMode ? styles.activeButton : {}]}>
+    <Text style={styles.zoomText}>🔥</Text>
+  </TouchableOpacity>
+</View>
+
+      <View style={styles.legendContainer}>
+  <View style={styles.legendItem}>
+    <View style={[styles.colorBox, { backgroundColor: 'blue' }]} />
+    <Text style={styles.legendText}>Water</Text>
+  </View>
+  <View style={styles.legendItem}>
+    <View style={[styles.colorBox, { backgroundColor: 'green' }]} />
+    <Text style={styles.legendText}>Plantation</Text>
+  </View>
+  <View style={styles.legendItem}>
+    <View style={[styles.colorBox, { backgroundColor: 'brown' }]} />
+    <Text style={styles.legendText}>Mountains</Text>
+  </View>
+  <View style={styles.legendItem}>
+    <View style={[styles.colorBox, { backgroundColor: 'yellow' }]} />
+    <Text style={styles.legendText}>Desert</Text>
+  </View>
+</View>
+
+
+
+{heatMapMode && (
+            <View style={styles.heatLegendContainer}>
+              <Text style={styles.legendTitle}>Temperature</Text>
+              <View style={styles.legendGradient}>
+                <View style={[styles.legendColorBox, {backgroundColor: 'rgb(0, 0, 255)'}]} />
+                <View style={[styles.legendColorBox, {backgroundColor: 'rgb(0, 100, 255)'}]} />
+                <View style={[styles.legendColorBox, {backgroundColor: 'rgb(0, 200, 255)'}]} />
+                <View style={[styles.legendColorBox, {backgroundColor: 'rgb(255, 255, 0)'}]} />
+                <View style={[styles.legendColorBox, {backgroundColor: 'rgb(255, 100, 0)'}]} />
+                <View style={[styles.legendColorBox, {backgroundColor: 'rgb(255, 0, 0)'}]} />
+              </View>
+              <View style={styles.legendLabels}>
+                <Text style={styles.legendText}>Cold</Text>
+                <Text style={styles.legendText}>Hot</Text>
+              </View>
+            </View>
+          )}
+
+
+
+
+
+
+
+
+
+
 
             {currentWeather ? (
               <Animated.View
@@ -359,58 +449,7 @@ const Content = () => {
                     {currentWeather.city || "Fetching location..."}
                   </Text>
 
-                {/* <Image
-                  //  source={{ uri: currentWeather.icon }}
-                    style={styles.Icon}
-                  />
-                  */} 
-<Image
-  source={getLocalWeatherImage(currentWeather.description)}
-  style={styles.Icon}
-/>
-                  <Text style={styles.temperature}>
-                    {currentWeather.temperature !== undefined
-                      ? `${Math.round(currentWeather.temperature)}°C`
-                      : "Loading..."}
-                  </Text>
-
-                  <Text style={styles.description}>
-                    {currentWeather.description || "Getting weather..."}
-                  </Text>
-
-                  {/* Additional Weather Details */}
-                  <View style={styles.weatherDetailsContainer}>
-                    <View style={styles.weatherDetailsRow}>
-                      <Text style={styles.detailsDescriptionName}>
-                        Wind Speed:
-                      </Text>
-                      <Text style={styles.detailsDescriptionValue}>
-                        {currentWeather.windSpeed !== undefined
-                          ? `${currentWeather.windSpeed} m/s\n`
-                          : "Loading..."}
-                      </Text>
-                    </View>
-                    <View style={styles.weatherDetailsRow}>
-                      <Text style={styles.detailsDescriptionName}>
-                        Wind Direction:
-                      </Text>
-                      <Text style={styles.detailsDescriptionValue}>
-                        {currentWeather.windDirection !== undefined
-                          ? `${currentWeather.windDirection}°\n`
-                          : "Loading..."}
-                      </Text>
-                    </View>
-                    <View style={styles.weatherDetailsRow}>
-                      <Text style={styles.detailsDescriptionName}>
-                        Humidity:
-                      </Text>
-                      <Text style={styles.detailsDescriptionValue}>
-                        {currentWeather.humidity !== undefined
-                          ? `${currentWeather.humidity}%\n`
-                          : "Loading..."}
-                      </Text>
-                    </View>
-                  </View>
+                 
                 </View>
               </Animated.View>
             ) : (
@@ -419,23 +458,9 @@ const Content = () => {
                 <Text>Fetching weather...</Text>
               </View>
             )}
-
-            {/* ***************Graph View below******************** */}
           </ScrollView>
-          <View style={styles.footer}>
-            <TouchableOpacity
-              style={styles.footerButton}
-              onPress={() => navigation.navigate("HomeScreen")}
-            >
-              <Icon name="home" size={24} color="#fff" />
-              <Text style={styles.footerText}>Home</Text>
-            </TouchableOpacity>
 
-            <TouchableOpacity style={styles.footerButton}>
-              <Icon name="bars" size={24} color="#fff" />
-              <Text style={styles.footerText}>Menu</Text>
-            </TouchableOpacity>
-          </View>
+      
         </View>
       </ImageBackground>
     </View>
@@ -443,11 +468,15 @@ const Content = () => {
 };
 
 const styles = StyleSheet.create({
-  activityTitle: {
-    marginTop: 50,
-    marginStart:20,
-    paddingBottom: 20,
-    flexDirection: "row",
+  arrow:{
+    position: "absolute",
+    justifyContent: "center",
+    marginBottom: 70,
+    marginLeft: 20,
+    marginTop:50,
+    borderRadius: 40,
+    paddingLeft: 14,
+    zIndex:2,
   },
   activityTitleText: {
     color: "white",
@@ -457,18 +486,10 @@ const styles = StyleSheet.create({
   parentcontainer: {
     flex: 1,
     width: "100%",
-    justifyContent: "flex-start",
-    alignItems: "flex-start",
-    paddingRight: 0,
-    paddingLeft: 0,
   },
   childcontainer: {
     flex: 1,
-    width: 420,
-    marginStart:15,
-    paddingBottom: 70,
-    paddingRight: 0,
-    paddingLeft: 0,
+    marginTop:40,
   },
   scrollContainer: {
     flexGrow: 1,
@@ -479,7 +500,127 @@ const styles = StyleSheet.create({
 
   background: {
     flex: 1,
+    backgroundColor:"rgba(14, 253, 142, 0.29)"
   },
+
+  zoomContainer:{
+    position:"absolute",
+    top:50,
+    right:20
+
+  },
+  zoomButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#3498db', // Blue color
+    borderRadius: 5,
+    borderWidth:2,
+    borderColor:"#fff",
+    margin: 5,
+    width: 40,
+    height: 40,
+  },
+  zoomText: {
+    color: '#fff', // White text color
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+
+  
+
+
+  legendContainer: {
+    position: 'absolute',
+    top: 90,
+    left: 5,
+    backgroundColor: 'rgba(255, 255, 255, 0.56)', // Semi-transparent white background
+    padding: 10,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    width: 120, // Adjust as needed
+  },
+  legendItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 5,
+  },
+  colorBox: {
+    width: 20,
+    height: 20,
+    marginRight: 10,
+    borderRadius: 4,
+  },
+  legendText: {
+    fontSize: 14,
+    color: '#333',
+  },
+
+
+  heatMapMarker: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'white',
+  },
+  activeButton: {
+    backgroundColor: '#e74c3c', // A reddish color to indicate active
+  },
+
+  heatMapLoadingContainer: {
+    position: 'absolute',
+    top: '50%',
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    padding: 15,
+  },
+  heatMapLoadingText: {
+    color: '#fff',
+    marginTop: 10,
+    fontWeight: 'bold',
+  },
+  activeButton: {
+    backgroundColor: '#e74c3c',
+  },
+  heatLegendContainer: {
+    position: 'absolute',
+    bottom: 80,
+    right: 10,
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    padding: 10,
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: '#ccc',
+  },
+  legendTitle: {
+    fontWeight: 'bold',
+    marginBottom: 5,
+    textAlign: 'center',
+  },
+  legendGradient: {
+    flexDirection: 'row',
+    height: 20,
+    width: 150,
+  },
+  legendColorBox: {
+    flex: 1,
+    height: 20,
+  },
+  legendLabels: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 5,
+  },
+  legendText: {
+    fontSize: 12,
+  },
+  
+
 
   //markerContainer: { flexDirection: "row", alignItems: "center", backgroundColor: "rgba(0,0,0,0.7)", padding: 5, borderRadius: 5 }, //////////////////Duplicate
   //weatherIcon: { width: 30, height: 30 },                                                                                             /////////////////Duplicate
@@ -523,18 +664,7 @@ const styles = StyleSheet.create({
     borderColor: "#ddd",
     borderWidth: 1,
   },
-  locateButton: {
-    borderRadius: 20,
-    borderWidth: 2,
-    borderColor: "rgb(255, 255, 255)",
-    marginLeft: 20,
-    marginBottom: 70,
-    borderRadius: 40,
-    paddingLeft: 14,
-    justifyContent: "center",
-    height: 50,
-    width: 50,
-  },
+  
   searchButton: {
     backgroundColor: "rgba(0, 123, 255, 1)",
     //backgroundColor: "#007bff",
@@ -547,18 +677,16 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   map: {
-    marginStart: 20,
-    width: width - 70,
-    height: height / 2.3,
-    borderRadius: 10,
-    marginVertical: -5,
-    top: -30,
+    flex: 1, // Makes the map take up full space
   },
   weatherInfo: {
-    alignItems: "flex-start",
-    marginStart: 20,
+    position: "absolute",
+    bottom: 10,
+    left: 10,
+    right: 10,
+    // backgroundColor: "rgba(0, 0, 0, 0.5)",
+    padding: 10,
     borderRadius: 10,
-    marginBottom: 20,
   },
   city: {
     fontSize: 24,

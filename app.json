@@ -18,12 +18,12 @@
         "NSLocationWhenInUseUsageDescription": "We need your location to provide accurate weather updates.",
         "NSLocationAlwaysAndWhenInUseUsageDescription": "We need your location to provide weather updates even when the app is in the background."
       },
-      "bundleIdentifier": "com.bennetsasu.done"
+      "bundleIdentifier": "com.bennetsasu.bennet"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./app/assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        //"backgroundColor": "#0000"
       }
     },
     "web": {

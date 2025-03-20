@@ -53,6 +53,8 @@ const getLocalWeatherImage = (condition) => {
       return require("../assets/fog.png"); // Replace with your local image path
     case "clear sky":
       return require("../assets/clearsky_day.png"); // Replace with your local image path
+      case "moderate rain":
+        return require("../assets/heavyrain.png"); // Replace with your local image path
     default:
       return null;
   }
@@ -150,6 +152,7 @@ const Content = () => {
   const [showPreloader, setShowPreloader] = useState(true);
   const navigation = useNavigation();
   const apiKey = "aa39f484a324f3970d43e82d0856b259";
+  
   ////////////////////////////////// THIS IS THE CONSTANT FOR ADDING NEW FUNCTIONALITIES OR DISPLAYS TO THE APP ENDS /////////////////////////////////////////////////
 
   ////////////////////////////////// THIS IS THE FUNCTION FOR GETTING THE WEATHER LOCATION STARTS /////////////////////////////////////////////////
@@ -162,17 +165,35 @@ const Content = () => {
   ////////////////////////////////// THIS IS THE FUNCTION FOR GETTING THE WEATHER LOCATION ENDS  /////////////////////////////////////////////////
 
   ////////////////////////////////// THIS IS THE FUNCTION FOR GETTING THE WEATHER DATA FROM THE LOCATION STARTS /////////////////////////////////////////////////
-  const fetchWeatherData = async (url) => {
-    try {
-      const response = await fetch(url);
-      if (!response.ok)
-        throw new Error(`HTTP Error! Status: ${response.status}`);
-      return await response.json();
-    } catch (error) {
-      console.error("Error fetching weather data:", error);
-      return null; // Prevents app from crashing
-    }
-  };
+ 
+ 
+ 
+const fetchWeatherData = async (url) => {
+  try {
+    console.log("Fetching:", url); // Log URL
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(`HTTP Error! Status: ${response.status}`);
+    
+    const data = await response.json();
+    console.log("Fetched data:", data); // Log full response
+    
+    return data;
+  } catch (error) {
+    console.error("Error fetching weather data:", error);
+    return null;
+  }
+};
+
+{/*
+  // Function to render each hourly forecast item
+  const renderHourlyForecast = ({ item }) => (
+    <View style={styles.hourlyForecastCard}>
+      <Text>{new Date(item.dt * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
+      <Image source={{ uri: `https://openweathermap.org/img/wn/${item.weather[0]?.icon}.png` }} style={styles.hourlyIcon} />
+      <Text>{Math.round(item.main.temp)}°C</Text>
+    </View>
+  );
+*/}
 
   ////////////////////////////////// THIS IS THE FUNCTION FOR GETTING THE WEATHER DATA FROM THE LOCATION STARTS ENDS /////////////////////////////////////////////////
 
@@ -267,7 +288,8 @@ const Content = () => {
         });
 
         setHourlyForecast(forecastData.list.slice(0, 4));
-        setDailyForecast(processDailyForecast(forecastData));
+        console.log("Updated hourly forecast:", forecastData.list.slice(0, 4));
+                setDailyForecast(processDailyForecast(forecastData));
       }
 
       setIsLoading(false);
@@ -311,6 +333,10 @@ const Content = () => {
       return;
     }
 
+    setIsLoading(true);
+    const searchTerm = searchCity.trim().toLowerCase();
+    
+
     if (!searchCity.trim()) {
       console.error("No city entered.");
       return;
@@ -348,8 +374,9 @@ const Content = () => {
           windDirection: currentData.wind.deg,
         });
 
-        //setHourlyForecast(filterHourlyForecast(forecastData.list));
-        setDailyForecast(processDailyForecast(forecastData)); // ✅ Now fetches daily forecast
+        setHourlyForecast(forecastData.list.slice(0, 4));
+        console.log("Updated hourly forecast:", forecastData.list.slice(0, 4));
+                setDailyForecast(processDailyForecast(forecastData)); // ✅ Now fetches daily forecast
       }
 
       if (currentData && currentData.weather) {
@@ -361,6 +388,7 @@ const Content = () => {
           description: weatherCondition,
           //    icon: `https://openweathermap.org/img/wn/${currentData.weather[0].icon}.png`,
           localImage: getLocalWeatherImage(weatherCondition), // Now this should work fine!
+          
         });
       }
     } catch (error) {
@@ -411,7 +439,7 @@ const Content = () => {
           </Text>
         </View>
 
-        {/* <Text style={styles.forecastTemp}>{weatherCondition}</Text> */}
+              {/* <Text style={styles.forecastTemp}>{weatherCondition}</Text>*/}
       </View>
     );
   };
@@ -463,6 +491,24 @@ const Content = () => {
       title: "Climate",
       image: require("../assets/climo-products.png"),
       url: "https://www.meteo.gov.gh/Services/climate/",
+    },
+    {
+      id: "4",
+      title: "Hydromet",
+      image: require("../assets/hydromet.jpg"),
+      url: "https://www.meteo.gov.gh/Services/hydrometeorology/",
+    },
+    {
+      id: "5",
+      title: "Public Weather",
+      image: require("../assets/public-weather.png"),
+      url: "https://www.meteo.gov.gh/Services/weather/",
+    },
+    {
+      id: "6",
+      title: "Numerical Weather Prediction",
+      image: require("../assets/numerical weather prediction.jpg"),
+      url: "https://www.meteo.gov.gh/Services/numerical-weather-prediction/",
     },
   ];
   ////////////////////////////////// THIS IS CONSTANT FOR DISPLAYING THE PRODUCTS SECTION OF THE APP STARTS ENDS ) /////////////////////////////////////////////////
@@ -530,6 +576,8 @@ const Content = () => {
             <View style={styles.forecastContainer}>
               <Text style={styles.sectionTitle}>Weather Forecast</Text>
               <View>
+              {hourlyForecast.length > 0 ? (
+
                 <FlatList
                   data={hourlyForecast}
                   renderItem={renderForecast}
@@ -538,6 +586,9 @@ const Content = () => {
                   showsHorizontalScrollIndicator={false}
                   contentContainerStyle={styles.forecastList}
                 />
+              ) : (
+                <Text>Loading hourly forecast...</Text>
+              )}
               </View>
             </View>
 
@@ -557,7 +608,7 @@ const Content = () => {
 
             {/*/////////////////////////////////////////////////////////////////// Our Products Section */}
             <View style={styles.productsContainer}>
-              <Text style={styles.sectionTitle}>Our Products</Text>
+              <Text style={styles.sectionTitle}>Our Services</Text>
               <View style={styles.productsBackground}>
                 <FlatList
                   data={products}

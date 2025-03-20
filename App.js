@@ -12,7 +12,7 @@ const Stack = createStackNavigator();
 const App = () => {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="SplashScreen">
+      <Stack.Navigator initialRouteName="HomeScreen">
       <Stack.Screen
           name="SplashScreen"
           component={SplashScreen} // Fixed: Added Home component
